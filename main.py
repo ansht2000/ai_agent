@@ -54,6 +54,7 @@ def main() -> None:
                                             contents=messages
                                         )
     print_response(res=res, input=input)
+    print("brayden is stupid")
 
 if __name__ == "__main__":
     main()
