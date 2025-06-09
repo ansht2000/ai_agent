@@ -3,3 +3,7 @@ venv
 
 # ignore environment vars
 .env
+
+# ignore all the caches jesus there's so many
+__pycache__
+.pytest_cache
