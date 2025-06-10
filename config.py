@@ -2,9 +2,11 @@
 # that will be added to llm prompt
 MAX_CHARS=10000
 
+WORKING_DIRECTORY="./calculator"
+
 # system prompt fed to the llm
 # every time
-SYSTEM_PROMPT="""
+SYSTEM_PROMPT=f"""
 You are a helpful AI coding agent.
 
 When a user asks a question or makes a request, make a function call plan. You can perform the following operations:
@@ -14,7 +16,5 @@ When a user asks a question or makes a request, make a function call plan. You c
 - Write or overwrite files
 - Execute Python files with optional arguments
 
-All paths you provide should be relative to the working directory. You do not need to specify the working directory in your function calls as it is automatically injected for security reasons.
+All paths you provide should be relative to the working directory, {WORKING_DIRECTORY}. You do not need to specify the working directory in your function calls as it is automatically injected for security reasons.
 """
-
-WORKING_DIRECTORY="./calculator"
