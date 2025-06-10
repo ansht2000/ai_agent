@@ -61,25 +61,37 @@ def main() -> None:
         ]
     )
 
-    res: types.GenerateContentResponse = client.models.generate_content(
-                                            model="gemini-2.0-flash-001",
-                                            contents=messages,
-                                            config=types.GenerateContentConfig(
-                                                tools=[available_functions],
-                                                system_instruction=SYSTEM_PROMPT
-                                            )
-                                        )
-    
     verbose = "verbose" in input.flags
     if verbose:
         text: str = f"Working on: {" ".join(input.tokens)}"
         print(f"Working on: {" ".join(input.tokens)}")
-        print(f"Prompt tokens: {res.usage_metadata.prompt_token_count}")
-        print(f"Response tokens: {res.usage_metadata.candidates_token_count}")
         print('=' * len(text))
 
-    llm_res: LLMResponse = process_llm_response(res, verbose=verbose)
-    # print_response(res=res, input=input)
+
+    for _ in range(20):
+        res: types.GenerateContentResponse = client.models.generate_content(
+                                                model="gemini-2.0-flash-001",
+                                                contents=messages,
+                                                config=types.GenerateContentConfig(
+                                                    tools=[available_functions],
+                                                    system_instruction=SYSTEM_PROMPT
+                                                )
+                                            )
+        
+        for candidate in res.candidates:
+            messages.append(candidate.content)
+        
+        if verbose:
+            print(f"Prompt tokens: {res.usage_metadata.prompt_token_count}")
+            print(f"Response tokens: {res.usage_metadata.candidates_token_count}")
+
+        llm_res: LLMResponse = process_llm_response(res, verbose=verbose)
+
+        if not llm_res.function_calls:
+            break
+
+        for _, v in llm_res.function_call_results.items():
+            messages.append(v)
 
 if __name__ == "__main__":
     main()

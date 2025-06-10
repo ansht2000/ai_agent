@@ -1,8 +1,9 @@
 import os
 import subprocess
+from typing import List
 from google.genai import types
 
-def run_python_file(working_directory: os.PathLike, file_path: os.PathLike) -> str:
+def run_python_file(working_directory: os.PathLike, file_path: os.PathLike, args: List[str] = None) -> str:
     target_file: str = os.path.abspath(os.path.join(working_directory, file_path))
     abs_working_dir: str = os.path.abspath(working_directory)
     
@@ -15,8 +16,10 @@ def run_python_file(working_directory: os.PathLike, file_path: os.PathLike) -> s
     if target_file.split("/")[-1].split(".")[-1] != "py":
         return f"Error: '{file_path}' is not a python file."
     
+    file_args = ["python3", target_file, *args] if args else ["python3", target_file]
+    
     try:
-        process: subprocess.CompletedProcess = subprocess.run(args=["python3", target_file],
+        process: subprocess.CompletedProcess = subprocess.run(args=file_args,
                                                               capture_output=True,
                                                               timeout=30,
                                                               cwd=abs_working_dir,
@@ -43,6 +46,10 @@ schema_run_python_file: types.FunctionDeclaration = types.FunctionDeclaration(
                 type=types.Type.STRING,
                 description="The path of the python file to run, relative to the working directory"
             ),
+            "args": types.Schema(
+                type=types.Type.STRING,
+                description="Additional arguments supplied to run a python file if necessary, defaults to None if not specified"
+            )
         },
     ),
 )
